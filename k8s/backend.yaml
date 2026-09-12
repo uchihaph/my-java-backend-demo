@@ -33,17 +33,18 @@ spec:
           httpGet:
             path: /hello
             port: 8080
-          initialDelaySeconds: 10
-          periodSeconds: 5
-          failureThreshold: 12
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          failureThreshold: 30
+          timeoutSeconds: 5
 
         # 存活探针：假死自动重启
         livenessProbe:
           httpGet:
             path: /hello
             port: 8080
-          initialDelaySeconds: 30
-          periodSeconds: 10
+          initialDelaySeconds: 120
+          periodSeconds: 20
           failureThreshold: 3
           timeoutSeconds: 5
 
@@ -52,10 +53,10 @@ spec:
           httpGet:
             path: /hello
             port: 8080
-          initialDelaySeconds: 20
-          periodSeconds: 5
+          initialDelaySeconds: 90
+          periodSeconds: 10
           failureThreshold: 3
-          timeoutSeconds: 3
+          timeoutSeconds: 5
         # ====================================
 
         # 从 ConfigMap 注入非敏感配置
