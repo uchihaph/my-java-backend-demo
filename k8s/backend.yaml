@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: uchihaph/my-java-backend:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        
+        resources:
+         requests:
+           cpu: "100m"
+           memory: "256Mi"
+         limits:
+           cpu: "500m"
+           memory: "512Mi"
+
+        # ========== 健康检查三件套 ==========
+        # 启动探针：给 Java 最多 ~70 秒启动时间
+        startupProbe:
+          httpGet:
+            path: /hello
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          failureThreshold: 12
+
+        # 存活探针：假死自动重启
+        livenessProbe:
+          httpGet:
+            path: /hello
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          failureThreshold: 3
+          timeoutSeconds: 5
+
+        # 就绪探针：没就绪就不接流量
+        readinessProbe:
+          httpGet:
+            path: /hello
+            port: 8080
+          initialDelaySeconds: 20
+          periodSeconds: 5
+          failureThreshold: 3
+          timeoutSeconds: 3
+        # ====================================
+
+        # 从 ConfigMap 注入非敏感配置
+        envFrom:
+        - configMapRef:
+            name: app-config
+        # 单独注入敏感配置（从 Secret 读取）
+        env:
+        - name: SPRING_DATASOURCE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: mysql-root-password
+        - name: SPRING_DATASOURCE_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: mysql-username
+        - name: SPRING_DATASOURCE_URL
+          value: "jdbc:mysql://mysql-service:3306/test_db?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true"
+        - name: SPRING_DATA_REDIS_HOST
+          value: "redis-service"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+spec:
+  selector:
+    app: backend
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
