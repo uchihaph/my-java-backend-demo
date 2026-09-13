@@ -14,7 +14,7 @@ public class DemoApplication {
 
     @GetMapping("/hello")
     public String hello() {
-        return "Hello from GitHub Actions + ArgoCD! V2";
+        return "Hello from GitHub Actions + ArgoCD! V3";
 
     }
 }
