@@ -1,13 +1,19 @@
-name: Build and Push Docker Image
+me: Build, Push and Update K8s Manifest
 
 on:
   push:
     branches: [ main ]
+    # 忽略对 k8s/ 目录的修改，避免"修改 YAML 又触发 workflow"的死循环
+    paths-ignore:
+      - 'k8s/**'
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write   # 允许 workflow 提交代码回仓库
 
     steps:
       # 1. 拉取代码
@@ -32,10 +38,26 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # 5. 构建并推送镜像
+      # 5. 构建并推送镜像（tag 用 commit hash 的前 7 位）
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/my-java-backend:latest
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/my-java-backend:${{ github.sha }}
+            ${{ secrets.DOCKER_USERNAME }}/my-java-backend:latest
+
+      # 6. 修改 k8s/backend.yaml 里的 image tag
+      - name: Update K8s manifest image tag
+        run: |
+          sed -i "s|image: .*my-java-backend:.*|image: ${{ secrets.DOCKER_USERNAME }}/my-java-backend:${{ github.sha }}|g" k8s/backend.yaml
+
+      # 7. 提交并推送回 GitHub（让 ArgoCD 检测到变化）
+      - name: Commit and push manifest update
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add k8s/backend.yaml
+          git commit -m "ci: update backend image to ${{ github.sha }}" || echo "no changes"
+          git push
