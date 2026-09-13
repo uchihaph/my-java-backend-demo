@@ -1,12 +1,12 @@
 name: Build, Push and Update K8s Manifest
 
 on:
-  push:
-    branches: [ main ]
-    # 忽略对 k8s/ 目录的修改，避免"修改 YAML 又触发 workflow"的死循环
-    paths-ignore:
-      - 'k8s/**'
-  workflow_dispatch:
+  workflow_dispatch:    # ← 只保留手动触发
+    inputs:
+      reason:
+        description: '发布原因（可选）'
+        required: false
+        default: '手动发布'
 
 jobs:
   build:
