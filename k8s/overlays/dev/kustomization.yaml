@@ -1,0 +1,19 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# 引用 base（相对路径，../../ 表示上两级到 k8s/，然后 base/）
+resources:
+  - ../../base
+
+# dev 环境特有的配置：backend 只跑 1 个副本
+replicas:
+  - name: backend-deploy
+    count: 1
+
+# dev 环境用的镜像
+images:
+  - name: uchihaph/my-java-backend
+    newTag: latest
+
+# dev 环境部署到 dev namespace
+namespace: dev
