@@ -15,6 +15,7 @@ spec:
     repoURL: https://github.com/uchihaph/my-java-backend-demo.git
     targetRevision: main
     path: k8s
+    kustomize: {}
   destination:
     server: https://kubernetes.default.svc
     namespace: default
