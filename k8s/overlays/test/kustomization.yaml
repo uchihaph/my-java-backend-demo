@@ -4,7 +4,8 @@ kind: Kustomization
 resources:
   - ../../base
 
-# test 环境：2 个副本
+namespace: test
+
 replicas:
   - name: backend-deploy
     count: 2
@@ -13,4 +14,11 @@ images:
   - name: uchihaph/my-java-backend
     newTag: latest
 
-namespace: test
+patches:
+  - target:
+      kind: Ingress
+      name: my-ingress
+    patch: |-
+      - op: replace
+        path: /spec/rules/0/host
+        value: test.hanguo.bbroot.com
