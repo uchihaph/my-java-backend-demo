@@ -1,4 +1,4 @@
-me: Build, Push and Update K8s Manifest
+name: Build, Push and Update K8s Manifest
 
 on:
   push:
