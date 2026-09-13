@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backend-deploy
-  annotations:
 spec:
   replicas: 1
   selector:
@@ -15,21 +14,20 @@ spec:
     spec:
       containers:
       - name: backend
-        image: uchihaph/my-java-backend:78d6d1316ae9214b0c8a153e4b5bc81fa6a8314f
+        image: uchihaph/my-java-backend:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
-        
+
         resources:
-         requests:
-           cpu: "100m"
-           memory: "256Mi"
-         limits:
-           cpu: "500m"
-           memory: "512Mi"
+          requests:
+            cpu: "100m"
+            memory: "256Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
 
         # ========== 健康检查三件套 ==========
-        # 启动探针：给 Java 最多 ~70 秒启动时间
         startupProbe:
           httpGet:
             path: /hello
@@ -39,7 +37,6 @@ spec:
           failureThreshold: 30
           timeoutSeconds: 5
 
-        # 存活探针：假死自动重启
         livenessProbe:
           httpGet:
             path: /hello
@@ -49,7 +46,6 @@ spec:
           failureThreshold: 3
           timeoutSeconds: 5
 
-        # 就绪探针：没就绪就不接流量
         readinessProbe:
           httpGet:
             path: /hello
@@ -60,11 +56,9 @@ spec:
           timeoutSeconds: 5
         # ====================================
 
-        # 从 ConfigMap 注入非敏感配置
         envFrom:
         - configMapRef:
             name: app-config
-        # 单独注入敏感配置（从 Secret 读取）
         env:
         - name: SPRING_DATASOURCE_PASSWORD
           valueFrom:
