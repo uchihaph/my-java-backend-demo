@@ -3,20 +3,21 @@ kind: Application
 metadata:
   name: my-java-backend
   namespace: argocd
+  annotations:
+    # 告诉 AIU 监控这个 Application 下的镜像
+    argocd-image-updater.argoproj.io/image-list: myapp=uchihaph/my-java-backend
+    argocd-image-updater.argoproj.io/myapp.update-strategy: latest
+    argocd-image-updater.argoproj.io/myapp.allow-tags: regexp:^latest$
+    argocd-image-updater.argoproj.io/write-back-method: argocd
 spec:
   project: default
-
   source:
-    # 你的 GitHub 仓库地址
     repoURL: https://github.com/uchihaph/my-java-backend-demo.git
     targetRevision: main
-    # YAML 所在的目录
     path: k8s
-
   destination:
     server: https://kubernetes.default.svc
     namespace: default
-
   syncPolicy:
     automated:
       prune: true
