@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: uchihaph/my-java-backend:53737375db23e28800ce90694221d292b0b06a21
+        image: uchihaph/my-java-backend:78d6d1316ae9214b0c8a153e4b5bc81fa6a8314f
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
