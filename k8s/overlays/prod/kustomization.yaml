@@ -42,3 +42,10 @@ patches:
                   name: backend-service
                   port:
                     number: 8080
+      - op: add
+        path: /spec/tls
+        value:
+        - hosts:
+          - hanguo.bbroot.com
+          - www.hanguo.bbroot.com
+          secretName: hanguo-tls
