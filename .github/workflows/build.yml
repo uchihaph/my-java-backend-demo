@@ -41,6 +41,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Validate branch and env
+        run: |
+          if [[ "${GITHUB_REF}" == "refs/heads/main" && "${ENV}" != "prod" ]]; then
+            echo "Error: main branch can only deploy to prod"
+            exit 1
+          fi
+          if [[ "${GITHUB_REF}" == "refs/heads/develop" && "${ENV}" != "test" ]]; then
+            echo "Error: develop branch can only deploy to test"
+            exit 1
+          fi
+        env:
+          ENV: ${{ github.event.inputs.env }}
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
