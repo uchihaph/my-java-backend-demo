@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>我的前后端分离项目</title>
+</head>
+<body>
+    <h1>欢迎来到我的 Java 前后端分离项目！</h1>
+    <p>下面显示的是从后端获取的数据：</p>
+    <button onclick="getData()">点我请求后端接口</button>
+    <div id="result" style="color: blue; font-weight: bold;"></div>
+
+    <script>
+        async function getData() {
+            // 注意这里请求的是 /api/hello，Nginx 会把它转发给后端的 8080 端口
+            const response = await fetch('/api/hello');
+            const text = await response.text();
+            document.getElementById('result').innerText = text;
+        }
+    </script>
+</body>
+</html>
