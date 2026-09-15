@@ -4,15 +4,6 @@ on:
   pull_request:
     branches: [ develop, main ]
   workflow_dispatch:
-    inputs:
-      env:
-        description: '环境（test 或 prod）'
-        required: true
-        default: 'test'
-        type: choice
-        options:
-          - test
-          - prod
 
 jobs:
   test:
@@ -41,18 +32,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Validate branch and env
+      - name: Determine env from branch
         run: |
-          if [[ "${GITHUB_REF}" == "refs/heads/main" && "${ENV}" != "prod" ]]; then
-            echo "Error: main branch can only deploy to prod"
+          if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
+            echo "ENV=prod" >> $GITHUB_ENV
+          elif [[ "${GITHUB_REF}" == "refs/heads/develop" ]]; then
+            echo "ENV=test" >> $GITHUB_ENV
+          else
+            echo "Error: only main or develop can trigger this workflow"
             exit 1
           fi
-          if [[ "${GITHUB_REF}" == "refs/heads/develop" && "${ENV}" != "test" ]]; then
-            echo "Error: develop branch can only deploy to test"
-            exit 1
-          fi
-        env:
-          ENV: ${{ github.event.inputs.env }}
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -88,7 +77,6 @@ jobs:
       - name: Update config repo
         env:
           CONFIG_REPO_TOKEN: ${{ secrets.CONFIG_REPO_TOKEN }}
-          ENV: ${{ github.event.inputs.env }}
           HASH: ${{ github.sha }}
         run: |
           git clone https://x-access-token:${CONFIG_REPO_TOKEN}@github.com/uchihaph/my-java-backend-config.git
