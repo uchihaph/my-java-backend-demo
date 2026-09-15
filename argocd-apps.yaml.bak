@@ -3,12 +3,13 @@ kind: Application
 metadata:
   name: my-java-backend-test
   namespace: argocd
+  annotations:
 spec:
   project: default
   source:
-    repoURL: https://github.com/uchihaph/my-java-backend-config.git
+    repoURL: https://github.com/uchihaph/my-java-backend-demo.git
     targetRevision: main
-    path: test
+    path: k8s/overlays/test
     kustomize:
       commonAnnotations:
         managed-by: argocd
@@ -25,12 +26,13 @@ kind: Application
 metadata:
   name: my-java-backend-prod
   namespace: argocd
+  annotations:
 spec:
   project: default
   source:
-    repoURL: https://github.com/uchihaph/my-java-backend-config.git
+    repoURL: https://github.com/uchihaph/my-java-backend-demo.git
     targetRevision: main
-    path: prod
+    path: k8s/overlays/prod
     kustomize:
       commonAnnotations:
         managed-by: argocd

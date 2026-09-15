@@ -73,3 +73,20 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/my-frontend:${{ github.sha }}
             ${{ secrets.DOCKER_USERNAME }}/my-frontend:latest
+
+      - name: Update config repo
+        env:
+          CONFIG_REPO_TOKEN: ${{ secrets.CONFIG_REPO_TOKEN }}
+          ENV: ${{ github.event.inputs.env }}
+          HASH: ${{ github.sha }}
+        run: |
+          git clone https://x-access-token:${CONFIG_REPO_TOKEN}@github.com/uchihaph/my-java-backend-config.git
+          cd my-java-backend-config
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          cd ${ENV}
+          sed -i "s|newTag: .*|newTag: ${HASH}|g" kustomization.yaml
+          cd ..
+          git add .
+          git commit -m "ci: update ${ENV} image to ${HASH}"
+          git push
