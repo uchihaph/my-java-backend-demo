@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class HealthController {
     @GetMapping("/hello")
     public String hello() {
-        return "Hello from features_20260915 branch!";
+        throw new RuntimeException("模拟业务故障");
 
     }
 
