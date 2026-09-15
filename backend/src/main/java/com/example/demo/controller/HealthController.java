@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class HealthController {
     @GetMapping("/hello")
     public String hello() {
-        return "Hello from GitHub Actions + ArgoCD! V3";
+        return "Hello from features_20260915 branch!";
 
     }
 
