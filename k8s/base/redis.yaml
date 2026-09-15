@@ -35,7 +35,7 @@ spec:
       - name: redis-data
         hostPath:
           # 数据存到数据盘
-          path: /data/project/testdocker/redis-data
+          path: PLACEHOLDER_REDIS_PATH
           type: DirectoryOrCreate
 ---
 apiVersion: v1

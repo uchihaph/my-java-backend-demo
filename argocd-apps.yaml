@@ -1,40 +1,9 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: my-java-backend-dev
-  namespace: argocd
-  annotations:
-    argocd-image-updater.argoproj.io/image-list: myapp=uchihaph/my-java-backend
-    argocd-image-updater.argoproj.io/myapp.update-strategy: newest-build
-    argocd-image-updater.argoproj.io/myapp.allow-tags: regexp:^[0-9a-f]{40}$
-    argocd-image-updater.argoproj.io/write-back-method: argocd
-spec:
-  project: default
-  source:
-    repoURL: https://github.com/uchihaph/my-java-backend-demo.git
-    targetRevision: main
-    path: k8s/overlays/dev
-    kustomize:
-      commonAnnotations:
-        managed-by: argocd
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: dev
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
   name: my-java-backend-test
   namespace: argocd
   annotations:
-    argocd-image-updater.argoproj.io/image-list: myapp=uchihaph/my-java-backend
-    argocd-image-updater.argoproj.io/myapp.update-strategy: newest-build
-    argocd-image-updater.argoproj.io/myapp.allow-tags: regexp:^[0-9a-f]{40}$
-    argocd-image-updater.argoproj.io/write-back-method: argocd
 spec:
   project: default
   source:
@@ -58,10 +27,6 @@ metadata:
   name: my-java-backend-prod
   namespace: argocd
   annotations:
-    argocd-image-updater.argoproj.io/image-list: myapp=uchihaph/my-java-backend
-    argocd-image-updater.argoproj.io/myapp.update-strategy: newest-build
-    argocd-image-updater.argoproj.io/myapp.allow-tags: regexp:^[0-9a-f]{40}$
-    argocd-image-updater.argoproj.io/write-back-method: argocd
 spec:
   project: default
   source:
